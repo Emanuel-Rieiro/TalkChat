@@ -2,9 +2,12 @@
 __pycache__/
 *.py[cod]
 *$py.class
-
+tmp_model/
+start.bat
+/recordings/*
 # C extensions
 *.so
+*.ipynb
 
 # Distribution / packaging
 .Python
