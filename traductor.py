@@ -20,5 +20,5 @@ def transcribe_audio(audio_path: str, model_size: str = "large") -> str:
     return result["text"]
 
 # Example usage:
-# translated_text = transcribe_audio("recordings/recording_1741561011.wav")
-# print(translated_text)
+translated_text = transcribe_audio("recordings/cv-corpus-20.0-delta-2024-12-06/es/clips/common_voice_es_41243968.mp3")
+print(translated_text)
