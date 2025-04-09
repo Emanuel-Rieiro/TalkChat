@@ -5,6 +5,8 @@ __pycache__/
 tmp_model/
 start.bat
 /recordings/*
+voice_registry.pkl
+
 # C extensions
 *.so
 *.ipynb

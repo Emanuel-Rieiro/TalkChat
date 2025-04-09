@@ -1,7 +1,9 @@
 import numpy as np
+import pickle
+import os
 
 class VoiceRegistry:
-    def __init__(self, threshold=0.7):
+    def __init__(self, threshold=0.7, filepath="voice_registry.pkl"):
         """
         Initializes the voice registry.
         :param threshold: The similarity threshold to consider a match (default: 0.7)
@@ -9,6 +11,8 @@ class VoiceRegistry:
         self.registry = {}  # Stores embeddings with associated identities
         self.registry_inputs_count = {}
         self.threshold = threshold
+
+        self.load_registry(filepath)  # Load saved data if exists
 
     def register_voice(self, person_id, embedding):
         """
@@ -43,11 +47,13 @@ class VoiceRegistry:
 
     def process_voice(self, embedding):
         """
-        Processes an incoming voice embedding.
-        If a match is found, returns the existing person_id.
-        Otherwise, registers a new voice.
-        :param embedding: Numpy array of the input voice embedding
-        :return: Matched or newly assigned person_id
+        Processes an incoming voice embedding. If a match is found, returns the existing person_id. Otherwise, registers a new voice.
+        
+        Args:
+            embedding (np.ndarray): Numpy array of the input voice embedding
+        
+        Returns:
+            str: Matched or newly assigned person_id
         """
         match = self.find_closest_match(embedding)
         if match:
@@ -77,3 +83,34 @@ class VoiceRegistry:
         self.registry[person_id] = self.registry[person_id] + (embedding - self.registry[person_id]) / self.registry_inputs_count[person_id]
     
         return 'Successfull update'
+
+    def save_registry(self, filepath="voice_registry.pkl"):
+        """
+        Saves the registry and registry_inputs_count to a file.
+
+        Args:
+            filepath (str): Path to the file where data will be saved.
+        """
+        with open(filepath, "wb") as f:
+            pickle.dump({
+                'registry': self.registry,
+                'registry_inputs_count': self.registry_inputs_count
+            }, f)
+        print(f"Registry saved to {filepath}")
+
+    def load_registry(self, filepath="voice_registry.pkl"):
+        """
+        Loads the registry and registry_inputs_count from a file.
+
+        Args:
+            filepath (str): Path to the file where data is stored.
+        """
+        if not os.path.exists(filepath):
+            print(f"No file found at {filepath}. Starting with an empty registry.")
+            return
+
+        with open(filepath, "rb") as f:
+            data = pickle.load(f)
+            self.registry = data.get('registry', {})
+            self.registry_inputs_count = data.get('registry_inputs_count', {})
+        print(f"Registry loaded from {filepath}")
