@@ -1,5 +1,4 @@
 import numpy as np
-from sklearn.metrics.pairwise import cosine_similarity
 
 class VoiceRegistry:
     def __init__(self, threshold=0.7):
@@ -8,6 +7,7 @@ class VoiceRegistry:
         :param threshold: The similarity threshold to consider a match (default: 0.7)
         """
         self.registry = {}  # Stores embeddings with associated identities
+        self.registry_inputs_count = {}
         self.threshold = threshold
 
     def register_voice(self, person_id, embedding):
@@ -17,6 +17,7 @@ class VoiceRegistry:
         :param embedding: Numpy array representing the voice embedding
         """
         self.registry[person_id] = embedding
+        self.registry_inputs_count[person_id] = 1
 
     def find_closest_match(self, embedding):
         """
@@ -33,7 +34,7 @@ class VoiceRegistry:
         
         for person_id, stored_embedding in self.registry.items():
             similarity = np.inner(embedding, stored_embedding)
-            print(similarity)
+            print(person_id, similarity)
             if similarity > best_score:
                 best_score = similarity
                 best_match = person_id
@@ -55,3 +56,24 @@ class VoiceRegistry:
         new_id = f"Person_{len(self.registry) + 1}"
         self.register_voice(new_id, embedding)
         return new_id
+
+    def update_embedding(self, person_id, embedding):
+        """
+        Updates the stored embedding for a given person using a running average.
+
+        Args:
+            person_id (str): Identifier for the person whose embedding is being updated.
+            embedding (np.ndarray): The new embedding to incorporate into the registry.
+
+        Returns:
+            str: A success message after the update.
+
+        Note:
+            The update is performed using the formula for a running average:
+            new_average = old_average + (new_value - old_average) / count
+            This assumes that self.registry[person_id] holds the current average
+            and self.registry_inputs_count[person_id] holds the number of embeddings seen so far.
+        """
+        self.registry[person_id] = self.registry[person_id] + (embedding - self.registry[person_id]) / self.registry_inputs_count[person_id]
+    
+        return 'Successfull update'
