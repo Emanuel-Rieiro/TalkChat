@@ -6,6 +6,7 @@ tmp_model/
 start.bat
 /recordings/*
 voice_registry.pkl
+old_files
 
 # C extensions
 *.so
