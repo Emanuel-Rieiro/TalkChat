@@ -124,6 +124,27 @@ class VoiceRegistry:
             self.registry = data.get('registry', {})
             self.registry_inputs_count = data.get('registry_inputs_count', {})
         print(f"Registry loaded from {filepath}")
+    
+    def delete_person(self, person_id):
+        """
+        Deletes the voice data for a given person_id from the registry.
+        
+        Args:
+            person_id (str): Unique identifier for the person to delete
+        
+        Returns:
+            (bool) True if the person was removed, False if not found
+        """
+        found = False
+        if person_id in self.registry:
+            del self.registry[person_id]
+            found = True
+        if person_id in self.registry_inputs_count:
+            del self.registry_inputs_count[person_id]
+            found = True
+
+        print(f'{person_id} deleted')
+        return found
 
     def reset_registry(self):
         """
